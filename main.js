@@ -1,8 +1,9 @@
 'use strict'
 
 const game = require('./game.js')
-const names = ['minmax', 'dict', 'algo', 'defensive', 'aggressive', 'first'/*, 'random'*/]
-const ps = names.map(name => ({ name, f: require(`./players/${name}.js`) }))
+const dir = './players/'
+const names = require('fs').readdirSync(dir)
+const ps = names.map(name => ({ name, f: require(`${dir}${name}`) }))
 
 const pad = (str, len) => str + ' '.repeat(len - str.length)
 const max = ps.reduce((max, p) => Math.max(max, p.name.length), 0) + 2
