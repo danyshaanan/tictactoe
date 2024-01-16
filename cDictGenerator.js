@@ -100,24 +100,18 @@ const dict = {}
 let c = 0
 for (let [i, j, b] of legal_boards) {
 	const jsboard = cboard_to_jsboard(i, j)
-	
-	for (let m = 0; m < 9; m++) {
-		if (((i & (1 << m)) == 0) && ((j & (1 << m)) == 0)) {
-			const newboard = moveOnBoard(m, jsboard, '2')
-			const res = ttt(signs, newboard)
-			if (res.move !== undefined && res.val != 1) {
-				// console.log(m, JSON.stringify(res))
-				dict[b] = dict[b] || []
-				dict[b].push(m)
-			}
-		}
+	const res = ttt(signs, jsboard)
+	if (res.move !== undefined && res.val != 1) {
+		// console.log(m, JSON.stringify(res))
+		dict[b] = res.move
 	}
+
 	// console.log(i, j, b, jsboard)
 	// if (++c >= 3) process.exit()
 }
 
-// console.log(dict)
-
+//console.log(dict)
+//process.exit();
 
 // switch (expression) {
 //   case x:
@@ -130,21 +124,16 @@ for (let [i, j, b] of legal_boards) {
 //     // code block
 // }
 
-let s = Object.entries(dict).map(([board, moves]) => {
-	let encoded_moves = 0
-	moves.forEach(move => {
-		encoded_moves |= 1 << move
-	})
-		
+let s = Object.entries(dict).map(([board, move]) => {
 	// console.log(board, moves, encoded_moves)
 	// return `${board}: ${encoded_moves}`
-	return `            case ${board}: return ${encoded_moves};`
+	return `            case ${board}: return ${move};`
 }).join('\n')
 
 
 console.log(`
 
-uint64_t get_non_lossing_moves_per_board(uint64_t board) {
+uint64_t get_bes_move_per_board(uint64_t board) {
 	switch (board) {
 ${s}
 	  default:
